@@ -13,24 +13,30 @@ class Issue:
     message: str
 
 
-def check(c: Commit) -> list[Issue]:
+def check(c: Commit, profiles: set[str] | None = None) -> list[Issue]:
     issues: list[Issue] = []
 
     # 1. valid Conventional Commit header
     if not c.header_ok or not c.type:
         issues.append(Issue("error",
             "header is not a valid Conventional Commit: expected "
-            "'type[(scope)][~][!]: description'"))
+            "'type[~][(scope)][!]: description'"))
         return issues  # nothing else is meaningful without a header
 
-    # 2. type in the CKC union (case-insensitive, per spec rule 13)
-    types = data.all_types()
-    if c.type.lower() not in types:
-        issues.append(Issue("error",
-            f"unknown type '{c.type}'. Allowed CKC + Conventional Commits types: "
-            f"{', '.join(sorted(types))}"))
+    # 2. type in the active CKC union (case-insensitive, per spec rule 13)
+    tl = c.type.lower()
+    types = data.all_types(profiles)
+    if tl not in types:
+        owner = data.profile_of(tl)
+        if owner in ("proof", "science"):
+            issues.append(Issue("error",
+                f"type '{c.type}' belongs to the '{owner}' profile, which is not active here. "
+                f"Enable it (--profile {owner}, $CKC_PROFILES, or .ckc.toml)."))
+        else:
+            issues.append(Issue("error",
+                f"unknown type '{c.type}'. Allowed types: {', '.join(data.ordered_types(profiles))}"))
 
-    profile = data.profile_of(c.type.lower())
+    profile = data.profile_of(tl)
 
     # 3. Status footer value, if present, is a known namespaced status
     status = c.footer("Status")

@@ -45,11 +45,27 @@ CASES = [
      "formalize(x): close it\n\nLean: A.b\nStatus: math.machine-checked", 0, 1),
 ]
 
+# (label, message, expected_errors, min_warnings, profiles)
+PROFILE_CASES = [
+    ("science-only rejects formalize", "formalize(x): close it", 1, 0, {"science"}),
+    ("science-only allows experiment", "experiment(x): run it\n\nStatus: sci.measured", 0, 0, {"science"}),
+    ("proof-only rejects experiment", "experiment(x): run it", 1, 0, {"proof"}),
+    ("proof-only allows formalize", "formalize(x): close it\n\nLean: A.b\nStatus: math.machine-checked\nAxioms: propext", 0, 0, {"proof"}),
+    ("either profile allows shared conjecture", "conjecture(x): a claim", 0, 0, {"science"}),
+    ("either profile allows plain feat", "feat(x): tooling", 0, 0, {"proof"}),
+]
+
 
 def run() -> int:
     failures = 0
-    for label, msg, exp_err, min_warn in CASES:
-        issues = check(parse(msg))
+    for case in CASES + [(l, m, e, w) for (l, m, e, w, _p) in PROFILE_CASES]:
+        label, msg, exp_err, min_warn = case
+        profiles = None
+        for pc in PROFILE_CASES:
+            if pc[0] == label:
+                profiles = pc[4]
+                break
+        issues = check(parse(msg), profiles)
         errs = sum(1 for i in issues if i.level == "error")
         warns = sum(1 for i in issues if i.level == "warning")
         ok = (errs == exp_err) and (warns >= min_warn)
@@ -59,7 +75,8 @@ def run() -> int:
             failures += 1
             for i in issues:
                 print(f"         {i.level}: {i.message}")
-    print(f"\n{len(CASES) - failures}/{len(CASES)} passed")
+    total = len(CASES) + len(PROFILE_CASES)
+    print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 
 
