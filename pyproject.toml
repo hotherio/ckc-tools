@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ckc-lint"
+version = "0.1.0"
+description = "Validate commit messages against Conventional Knowledge Commits (CKC)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Alexandre Quemy" }]
+keywords = ["conventional-commits", "ckc", "git-hooks", "pre-commit", "lean", "provenance"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://hotherio.github.io/conventional-knowledge-commits/"
+Repository = "https://github.com/hotherio/ckc-tools"
+
+[project.scripts]
+ckc-lint = "ckc_lint.cli:main"
+ckc-axiom-check = "ckc_axiom_check.cli:main"
+
+[tool.setuptools]
+packages = ["ckc_lint", "ckc_axiom_check"]
+
+[tool.setuptools.package-data]
+ckc_lint = ["vocab.json"]
