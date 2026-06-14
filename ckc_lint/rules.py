@@ -13,7 +13,13 @@ class Issue:
     message: str
 
 
-def check(c: Commit, profiles: set[str] | None = None) -> list[Issue]:
+def check(c: Commit, profiles: set[str] | None = None,
+          allowed_types: list[str] | None = None) -> list[Issue]:
+    """Structural CKC checks.
+
+    If allowed_types is given (the positional types list, conventional-pre-commit style), the
+    type must be one of those; otherwise the active CKC union (by profile) is used.
+    """
     issues: list[Issue] = []
 
     # 1. valid Conventional Commit header
@@ -23,18 +29,24 @@ def check(c: Commit, profiles: set[str] | None = None) -> list[Issue]:
             "'type[~][(scope)][!]: description'"))
         return issues  # nothing else is meaningful without a header
 
-    # 2. type in the active CKC union (case-insensitive, per spec rule 13)
+    # 2. type membership (case-insensitive, per spec rule 13)
     tl = c.type.lower()
-    types = data.all_types(profiles)
-    if tl not in types:
-        owner = data.profile_of(tl)
-        if owner in ("proof", "science"):
+    if allowed_types is not None:
+        allowed = {t.lower() for t in allowed_types}
+        if tl not in allowed:
             issues.append(Issue("error",
-                f"type '{c.type}' belongs to the '{owner}' profile, which is not active here. "
-                f"Enable it (--profile {owner}, $CKC_PROFILES, or .ckc.toml)."))
-        else:
-            issues.append(Issue("error",
-                f"unknown type '{c.type}'. Allowed types: {', '.join(data.ordered_types(profiles))}"))
+                f"unknown type '{c.type}'. Allowed types: {', '.join(allowed_types)}"))
+    else:
+        types = data.all_types(profiles)
+        if tl not in types:
+            owner = data.profile_of(tl)
+            if owner in ("proof", "science"):
+                issues.append(Issue("error",
+                    f"type '{c.type}' belongs to the '{owner}' profile, which is not active here. "
+                    f"Enable it (--profile {owner}, $CKC_PROFILES, or .ckc.toml)."))
+            else:
+                issues.append(Issue("error",
+                    f"unknown type '{c.type}'. Allowed types: {', '.join(data.ordered_types(profiles))}"))
 
     profile = data.profile_of(tl)
 

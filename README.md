@@ -8,10 +8,12 @@ tooling, not replace it**.
 
 ## What's here
 
-- **`ckc-lint`** — a `commit-msg` validator (Python, no Node). Checks that a message is a valid
-  Conventional Commit and follows CKC: a known type (for the active profiles), a known `Status:`
-  value, uppercase trusted-base markers, `~` consistency, well-formed relation footers. It accepts
-  plain Conventional Commits unchanged.
+- **`ckc-lint`** — a `commit-msg` validator (Python, no Node). It is a **drop-in superset of
+  [`conventional-pre-commit`](https://github.com/compilerla/conventional-pre-commit)**: the same CLI
+  (positional types, `--strict`, `--force-scope`, `--scopes`, `--no-color`, `--verbose`, exit codes
+  0/1, `fixup!`/merge commits pass unless `--strict`). On top of that it allows the CKC vocabulary by
+  default and adds the CKC checks (known `Status:` value, uppercase trusted-base markers, `~`
+  consistency, well-formed relation footers).
 - **`ckc-axiom-check`** — an opt-in honesty hook for the proof profile. If a commit claims
   `Status: math.machine-checked`, it cross-checks the named `Lean:` declarations against the kernel
   via the lean-math `axiom-report` and rejects the commit if the kernel disagrees.
@@ -45,7 +47,7 @@ Commits and CKC:
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.1
+    rev: v0.1.2
     hooks:
       - id: ckc
         # args: [--profile, proof]      # optional; omit for both profiles
@@ -81,12 +83,39 @@ repos:
         stages: [commit-msg]
         args: [feat, fix, build, chore, ci, docs, perf, refactor, revert, style, test, conjecture, lit, review, refute, retract, expose, meta, state, proof, formalize, axiomatize, strengthen, generalize, weaken, port, experiment, result, replicate, null, data, protocol, method, analysis, repro-fix]
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.1
+    rev: v0.1.2
     hooks:
       - id: ckc
 ```
 
 Both hooks run on `commit-msg`; neither is replaced.
+
+### Migrating to `ckc` only
+
+Because `ckc` accepts the same interface as `conventional-pre-commit`, you can drop
+`conventional-pre-commit` and keep your existing `args`. Change the `repo` and `id`; everything else
+carries over:
+
+```yaml
+# before
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v3.6.0
+  hooks:
+    - id: conventional-pre-commit
+      stages: [commit-msg]
+      args: [--strict, --scopes, "api,client"]
+
+# after — same args, now also allows CKC types and runs the CKC checks
+- repo: https://github.com/hotherio/ckc-tools
+  rev: v0.1.2
+  hooks:
+    - id: ckc
+      stages: [commit-msg]
+      args: [--strict, --scopes, "api,client"]
+```
+
+If your old `args` pinned an explicit type list, `ckc` honours it exactly (it restricts to those
+types). Drop the list to allow the full CKC vocabulary for the active profiles.
 
 ## lefthook
 
