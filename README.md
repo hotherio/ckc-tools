@@ -8,16 +8,16 @@ tooling, not replace it**.
 
 ## What's here
 
-- **`ckc-lint`** — a `commit-msg` validator (Python, no Node). It is a **drop-in superset of
+- **`ckc-lint`**, a `commit-msg` validator (Python, no Node). It is a **drop-in superset of
   [`conventional-pre-commit`](https://github.com/compilerla/conventional-pre-commit)**: the same CLI
   (positional types, `--strict`, `--force-scope`, `--scopes`, `--no-color`, `--verbose`, exit codes
   0/1, `fixup!`/merge commits pass unless `--strict`). On top of that it allows the CKC vocabulary by
   default and adds the CKC checks (known `Status:` value, uppercase trusted-base markers, `~`
   consistency, well-formed relation footers).
-- **`ckc-axiom-check`** — an opt-in honesty hook for the proof profile. If a commit claims
+- **`ckc-axiom-check`**, an opt-in honesty hook for the proof profile. If a commit claims
   `Status: math.machine-checked`, it cross-checks the named `Lean:` declarations against the kernel
   via the lean-math `axiom-report` and rejects the commit if the kernel disagrees.
-- **`commitlint-config-ckc`** — a [commitlint](https://commitlint.js.org/) shareable config that
+- **`commitlint-config-ckc`**, a [commitlint](https://commitlint.js.org/) shareable config that
   widens `type-enum` to the CKC vocabulary.
 
 The vocabulary lives in one place, `ckc_lint/vocab.json`, shared by the Python validator and the
@@ -108,7 +108,7 @@ carries over:
       stages: [commit-msg]
       args: [--strict, --scopes, "api,client"]
 
-# after — same args, now also allows CKC types and runs the CKC checks
+# after: same args, now also allows CKC types and runs the CKC checks
 - repo: https://github.com/hotherio/ckc-tools
   rev: v0.1.3
   hooks:
