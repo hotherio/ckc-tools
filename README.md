@@ -47,7 +47,7 @@ Commits and CKC:
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.2
+    rev: v0.1.3
     hooks:
       - id: ckc
         # args: [--profile, proof]      # optional; omit for both profiles
@@ -58,6 +58,9 @@ repos:
 ```bash
 pre-commit install --hook-type commit-msg
 ```
+
+The hook id `ckc` is also available under the alias `conventional-knowledge-pre-commit`, named to
+parallel `conventional-pre-commit`. The two ids run the same validator; use whichever you prefer.
 
 ### Keeping `conventional-pre-commit`
 
@@ -83,7 +86,7 @@ repos:
         stages: [commit-msg]
         args: [feat, fix, build, chore, ci, docs, perf, refactor, revert, style, test, conjecture, lit, review, refute, retract, expose, meta, state, proof, formalize, axiomatize, strengthen, generalize, weaken, port, experiment, result, replicate, null, data, protocol, method, analysis, repro-fix]
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.2
+    rev: v0.1.3
     hooks:
       - id: ckc
 ```
@@ -107,7 +110,7 @@ carries over:
 
 # after — same args, now also allows CKC types and runs the CKC checks
 - repo: https://github.com/hotherio/ckc-tools
-  rev: v0.1.2
+  rev: v0.1.3
   hooks:
     - id: ckc
       stages: [commit-msg]

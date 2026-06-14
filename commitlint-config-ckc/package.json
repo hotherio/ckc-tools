@@ -1,6 +1,6 @@
 {
   "name": "commitlint-config-ckc",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "commitlint shareable config for Conventional Knowledge Commits (CKC): extends config-conventional and widens type-enum to the CKC vocabulary.",
   "main": "index.js",
   "files": ["index.js", "README.md"],

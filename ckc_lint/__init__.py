@@ -5,4 +5,4 @@ Conventional Commit and additionally checks the CKC vocabulary (types, statuses,
 markers, relation footers). See https://hotherio.github.io/conventional-knowledge-commits/.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
