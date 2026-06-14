@@ -5,6 +5,15 @@
   language: python
   stages: [commit-msg]
 
+- id: conventional-knowledge-pre-commit
+  name: Conventional Knowledge Commits (alias of ckc)
+  description: >-
+    Alias of the `ckc` hook, named to parallel conventional-pre-commit. Same validator,
+    same interface.
+  entry: ckc-lint
+  language: python
+  stages: [commit-msg]
+
 - id: ckc-axiom-check
   name: CKC axiom honesty check (Lean)
   description: >-
