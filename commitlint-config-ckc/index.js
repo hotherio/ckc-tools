@@ -1,4 +1,4 @@
-// commitlint-config-ckc — a shareable commitlint config for Conventional Knowledge Commits.
+// commitlint-config-ckc: a shareable commitlint config for Conventional Knowledge Commits.
 //
 // It extends @commitlint/config-conventional and widens `type-enum` to the CKC union, so a
 // commitlint setup accepts both plain Conventional Commits and CKC commits. This is the piece
