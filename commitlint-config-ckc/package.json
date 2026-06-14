@@ -1,0 +1,14 @@
+{
+  "name": "commitlint-config-ckc",
+  "version": "0.1.0",
+  "description": "commitlint shareable config for Conventional Knowledge Commits (CKC): extends config-conventional and widens type-enum to the CKC vocabulary.",
+  "main": "index.js",
+  "files": ["index.js", "README.md"],
+  "keywords": ["commitlint", "commitlint-config", "conventional-commits", "ckc"],
+  "homepage": "https://hotherio.github.io/conventional-knowledge-commits/",
+  "repository": { "type": "git", "url": "https://github.com/hotherio/ckc-tools.git", "directory": "commitlint-config-ckc" },
+  "license": "MIT",
+  "peerDependencies": {
+    "@commitlint/config-conventional": ">=18"
+  }
+}

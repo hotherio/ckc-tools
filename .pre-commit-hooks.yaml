@@ -1,0 +1,15 @@
+- id: ckc
+  name: Conventional Knowledge Commits
+  description: Validate the commit message against CKC (a superset of Conventional Commits).
+  entry: ckc-lint
+  language: python
+  stages: [commit-msg]
+
+- id: ckc-axiom-check
+  name: CKC axiom honesty check (Lean)
+  description: >-
+    Opt-in. Cross-check Status:/Axioms: footers against the kernel via the lean-math
+    axiom-report. Needs Lean and a built project; skips if axiom-report is unavailable.
+  entry: ckc-axiom-check
+  language: python
+  stages: [commit-msg]

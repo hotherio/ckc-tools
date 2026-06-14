@@ -1,0 +1,42 @@
+{
+  "_comment": "Single source of truth for the CKC vocabulary. Consumed by the Python validator (ckc_lint/data.py) and the commitlint config (commitlint-config-ckc/index.js). Keep in sync with the spec at https://hotherio.github.io/conventional-knowledge-commits/.",
+  "spec_version": "0.1.0",
+  "types": {
+    "shared": ["conjecture", "lit", "review", "refute", "retract", "expose", "meta"],
+    "proof": ["state", "proof", "formalize", "axiomatize", "strengthen", "generalize", "weaken", "port"],
+    "science": ["experiment", "result", "replicate", "null", "data", "protocol", "method", "analysis", "repro-fix"],
+    "conventional": ["feat", "fix", "build", "chore", "ci", "docs", "perf", "refactor", "revert", "style", "test"]
+  },
+  "status": {
+    "math": [
+      "math.conjectured",
+      "math.proved-informal",
+      "math.open",
+      "math.axiomatised",
+      "math.machine-checked",
+      "math.disproved"
+    ],
+    "sci": [
+      "sci.hypothesis",
+      "sci.piloted",
+      "sci.measured",
+      "sci.supported",
+      "sci.replicated",
+      "sci.not-replicated",
+      "sci.falsified"
+    ]
+  },
+  "trusted_base_tokens": ["AXIOM", "OPEN", "ASSUMES", "UNREPLICATED"],
+  "breaking_tokens": ["BREAKING CHANGE", "BREAKING-CHANGE"],
+  "relation_tokens": [
+    "Depends-On", "Assumes", "Proves", "Refutes", "Disproves",
+    "Supersedes", "Retracts", "Invalidates", "Closes"
+  ],
+  "provenance_tokens": [
+    "Claim-ID", "Status", "Impact", "Lean", "Formal-Statement", "Axioms", "Verified-By",
+    "Proof-Hash", "Cites", "Phase", "Gate",
+    "Dataset", "Raw-Data", "Protocol", "Method", "Sample-Size", "Replicates", "Effect-Size",
+    "CI", "P-Value", "Code", "Environment", "Seed", "Hardware", "Metric", "Pre-Registration",
+    "Ethics-Approval", "Profile", "Affects"
+  ]
+}
