@@ -75,7 +75,32 @@ def run() -> int:
             failures += 1
             for i in issues:
                 print(f"         {i.level}: {i.message}")
-    total = len(CASES) + len(PROFILE_CASES)
+    # CLI / conventional-pre-commit-compatibility cases: (label, argv, expected_exit)
+    from ckc_lint.cli import main as cli_main
+    cli_cases = [
+        ("cli: plain feat ok", ["--message", "feat(api): x"], 0),
+        ("cli: positional types restrict (experiment not allowed)",
+         ["feat", "fix", "--message", "experiment(x): y"], 1),
+        ("cli: positional types allow listed", ["feat", "fix", "--message", "fix(x): y"], 0),
+        ("cli: autosquash allowed by default", ["--message", "fixup! earlier commit"], 0),
+        ("cli: autosquash rejected under --strict", ["--strict", "--message", "fixup! earlier"], 1),
+        ("cli: merge allowed by default", ["--message", "Merge branch 'main'"], 0),
+        ("cli: --force-scope requires scope", ["--force-scope", "--message", "feat: x"], 1),
+        ("cli: --force-scope ok with scope", ["--force-scope", "--message", "feat(api): x"], 0),
+        ("cli: --scopes rejects unlisted", ["--scopes", "api,ui", "--message", "feat(db): x"], 1),
+        ("cli: --scopes accepts listed", ["--scopes", "api,ui", "--message", "feat(api): x"], 0),
+        ("cli: CKC type ok by default", ["--message", "formalize(x): close\n\nLean: A.b\nStatus: math.machine-checked\nAxioms: propext"], 0),
+    ]
+    cli_fail = 0
+    for label, argv, exp in cli_cases:
+        rc = cli_main(argv + ["--quiet"])
+        ok = rc == exp
+        print(f"  [{'ok  ' if ok else 'FAIL'}] {label}  (exit={rc} exp={exp})")
+        if not ok:
+            cli_fail += 1
+
+    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases)
+    failures += cli_fail
     print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 

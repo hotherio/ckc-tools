@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ckc-lint"
-version = "0.1.1"
+version = "0.1.2"
 description = "Validate commit messages against Conventional Knowledge Commits (CKC)."
 readme = "README.md"
 requires-python = ">=3.9"
