@@ -21,9 +21,25 @@ def vocab() -> dict:
         return json.load(fh)
 
 
-def all_types() -> set[str]:
+ALL_PROFILES = ("proof", "science")
+
+
+def ordered_types(profiles: set[str] | None = None) -> list[str]:
+    """The allowed types, in a stable order: conventional, shared, then the active profiles.
+
+    profiles=None means both profiles are active (the default).
+    """
+    active = set(ALL_PROFILES) if profiles is None else set(profiles)
     t = vocab()["types"]
-    return set(t["shared"]) | set(t["proof"]) | set(t["science"]) | set(t["conventional"])
+    out = list(t["conventional"]) + list(t["shared"])
+    for p in ALL_PROFILES:
+        if p in active:
+            out += list(t[p])
+    return out
+
+
+def all_types(profiles: set[str] | None = None) -> set[str]:
+    return set(ordered_types(profiles))
 
 
 def profile_of(commit_type: str) -> str | None:

@@ -12,6 +12,8 @@ from __future__ import annotations
 import argparse
 import sys
 
+from . import data
+from .config import resolve_profiles
 from .parse import parse
 from .rules import check
 
@@ -30,9 +32,20 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="ckc-lint", description="Validate a commit message against CKC.")
     ap.add_argument("file", nargs="?", help="path to the commit message file")
     ap.add_argument("--message", "-m", help="lint this message text instead of a file")
+    ap.add_argument("--profile", action="append",
+                    help="active profile(s): proof, science, or both (repeatable or comma-separated). "
+                         "Default: $CKC_PROFILES, then .ckc.toml, then both.")
+    ap.add_argument("--print-types", action="store_true",
+                    help="print the allowed types as a YAML list (for conventional-pre-commit args) and exit")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     ap.add_argument("--quiet", action="store_true", help="print nothing on success")
     args = ap.parse_args(argv)
+
+    profiles = resolve_profiles(args.profile)
+
+    if args.print_types:
+        print("[" + ", ".join(data.ordered_types(profiles)) + "]")
+        return 0
 
     if args.message is not None:
         text = args.message
@@ -48,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     on = sys.stderr.isatty()
-    issues = check(parse(text))
+    issues = check(parse(text), profiles)
     errors = [i for i in issues if i.level == "error"]
     warnings = [i for i in issues if i.level == "warning"]
 
