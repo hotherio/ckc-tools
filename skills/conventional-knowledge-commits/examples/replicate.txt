@@ -1,0 +1,8 @@
+replicate(non-additive): an independent run fails to reproduce the K>1 advantage
+
+Status: sci.not-replicated
+Dataset: D-2026-014 sha256:aa80...
+Sample-Size: n=1200
+Effect-Size: dMSE -0.03
+CI: 95% [-0.09, 0.04]
+Refutes: conjecture:tensor-rank-helps

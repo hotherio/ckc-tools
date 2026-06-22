@@ -1,0 +1,17 @@
+{
+  "name": "ckc",
+  "version": "0.1.3",
+  "description": "Conventional Knowledge Commits (CKC): a skill that teaches agents to write and validate knowledge commits (proofs, formalizations, experiments) with the right type, Status: footer, and relation footers, wired to the ckc-lint validator and the claimgraph ClaimGraph tool.",
+  "author": {
+    "name": "Alexandre Quemy"
+  },
+  "license": "MIT",
+  "keywords": [
+    "conventional-commits",
+    "conventional-knowledge-commits",
+    "ckc",
+    "lean",
+    "provenance",
+    "claimgraph"
+  ]
+}

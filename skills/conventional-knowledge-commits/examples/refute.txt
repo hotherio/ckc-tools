@@ -1,0 +1,7 @@
+refute(separability)!: a counterexample blocks naive separable factorization
+
+A radial counterexample shows the kernel does not factor under the affine-invariant metric.
+
+Disproves: conjecture:naive-separable
+Status: math.disproved
+BREAKING CHANGE: conjecture:naive-separable is withdrawn; the compensation result depends on it.
