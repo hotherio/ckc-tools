@@ -1,0 +1,7 @@
+formalize(fubini): close the d-fold separable factorization
+
+Lean: IGL.fubini_dfold, IGL.fubini_factorization
+Status: math.machine-checked
+Axioms: propext, Classical.choice, Quot.sound
+Verified-By: Lean 4.30.0; Mathlib v4.30.0
+Closes: conjecture:master-formula
