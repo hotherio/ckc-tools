@@ -31,10 +31,17 @@ def _find_axiom_report() -> str | None:
 
 
 def _statuses(report_bin: str, project: str, names: list[str]) -> dict[str, str]:
-    """Run axiom-report and return {decl: status} for the named declarations."""
+    """Run axiom-report and return {decl: status} for the named declarations.
+
+    The child environment is scrubbed of GIT_* variables: as a commit-msg hook we
+    inherit git's hook environment (GIT_DIR, GIT_INDEX_FILE, ...), and when the commit
+    happens inside a `git worktree` those leak into lake's own git operations, making
+    lake conclude the `.lake/packages` clones are foreign and wipe/re-clone them.
+    """
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
     proc = subprocess.run(
         [report_bin, project, *names],
-        capture_output=True, text=True, check=False,
+        capture_output=True, text=True, check=False, env=env,
     )
     out = {}
     for line in proc.stdout.splitlines():

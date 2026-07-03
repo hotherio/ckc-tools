@@ -99,8 +99,28 @@ def run() -> int:
         if not ok:
             cli_fail += 1
 
-    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases)
-    failures += cli_fail
+    # ckc-axiom-check: the axiom-report child env must be scrubbed of GIT_* (a commit-msg
+    # hook inherits git's hook env; inside a worktree the leak makes lake wipe .lake/packages).
+    import os
+    from unittest import mock
+
+    from ckc_axiom_check.cli import _statuses
+    env_fail = 0
+    os.environ["GIT_DIR"] = "/tmp/ckc-test-fake-gitdir"
+    try:
+        with mock.patch("ckc_axiom_check.cli.subprocess.run") as m:
+            m.return_value = mock.Mock(stdout="", returncode=0)
+            _statuses("fake-axiom-report", ".", ["Foo.bar"])
+            child_env = m.call_args.kwargs.get("env")
+            ok = child_env is not None and not any(k.startswith("GIT_") for k in child_env)
+    finally:
+        del os.environ["GIT_DIR"]
+    print(f"  [{'ok  ' if ok else 'FAIL'}] axiom-check: GIT_* scrubbed from axiom-report env")
+    if not ok:
+        env_fail = 1
+
+    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases) + 1
+    failures += cli_fail + env_fail
     print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 
