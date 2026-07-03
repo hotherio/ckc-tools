@@ -22,15 +22,16 @@ Profile resolution: `--profile` → `$CKC_PROFILES` → `.ckc.toml` (`profiles =
 Checks: header shape `type[~][(scope)][!]: desc`; type ∈ vocabulary; `Status:` ∈ known `math.*`/`sci.*`;
 trusted-base tokens (`AXIOM`/`OPEN`/`ASSUMES`/`UNREPLICATED`) and breaking tokens uppercase; warnings
 for `~`/footer mismatch and honesty gaps (`axiomatised` w/o `AXIOM:`, `open` w/o `OPEN:`,
-`machine-checked` w/o `Axioms:`, `axiomatised` w/o the statement-fidelity footers `Paper-Ref:` /
-`Refutation-Attempt:` — enforced as hard errors by `ckc-axiom-check`).
+`machine-checked` w/o `Axioms:`, `axiomatised` w/o the statement-fidelity footers `Source-Ref:` /
+`Refutation-Attempt:` — enforced as hard errors by `ckc-axiom-check` — and `sci.measured`/
+`sci.supported` citing a `Pre-Registration:`/`Protocol:` w/o a `Protocol-Deviations:` footer).
 
 Hook (pre-commit framework):
 ```yaml
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.2.0
+    rev: v0.3.0
     hooks: [ { id: ckc }, { id: ckc-axiom-check } ]   # second is optional
 ```
 `pre-commit install --hook-type commit-msg`. commitlint users: extend `commitlint-config-ckc`.
@@ -45,12 +46,14 @@ Acts only on commits claiming `Status: math.machine-checked` or `math.axiomatise
 `Formal-Statement:` footer. Needs Lean + a built project + `axiom-report` on PATH (or
 `$CKC_AXIOM_REPORT`). Exit 0 honest/skipped, 1 dishonest.
 
-**Statement-fidelity gate (strict, no Lean needed).** A `math.axiomatised` commit is rejected
-(exit 1) unless it carries both fidelity footers — the kernel checks the statement as written, not
-that the transcription matches the source:
+**Statement-fidelity gate (strict, no Lean needed; spec v0.2.0 rule 14).** A `math.axiomatised`
+commit is rejected (exit 1) unless it carries both fidelity footers — the kernel checks the
+statement as written, not that the transcription matches the source:
 
-- `Paper-Ref: <work, theorem, page>` — the source anchor of the transcribed statement, precise
+- `Source-Ref: <work, locus>` — the source anchor of the transcribed statement, precise
   enough to re-derive the hypotheses (e.g. `Braess & Hackbusch 2005, Thm 3.1, p.417`).
+  (`Paper-Ref:` is a deprecated alias: it still satisfies the gate but prints a deprecation
+  notice and will be removed in v0.4.0.)
 - `Refutation-Attempt: <artifact>` — the path/id of an attempt to refute the transcribed statement
   (e.g. `Refutations/F00_expSumRank_logBound.lean`).
 

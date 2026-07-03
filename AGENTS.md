@@ -30,12 +30,23 @@ epistemic `Status:` footer, and relation footers that let tooling build a depend
    `Disproves`, `Supersedes`, `Retracts`, `Invalidates`. Reference claims by the proof assistant's
    fully-qualified name or a `claims.toml` slug (`conjecture:<slug>`), never a commit hash.
 5. **Trusted-base markers** (uppercase, set `~` too): `AXIOM:`, `OPEN:`, `ASSUMES:`, `UNREPLICATED:`.
+6. **Fidelity footers** (spec v0.2.0 rule 14): `Source-Ref: <work, locus>` — the source anchor of a
+   transcribed statement (theorem, equation, or page; `Paper-Ref:` is a deprecated alias, removed in
+   v0.4.0); `Refutation-Attempt: <artifact>` — an attempt to refute the statement as written;
+   `Protocol-Deviations: none | <log>` — as-run vs registered protocol, when a `Pre-Registration:`
+   or `Protocol:` is cited; `Fidelity-Reviewed: <who/when>` — optional human sign-off.
 
 ## Rules of thumb
 
 - A CKC commit MUST be a valid Conventional Commit; one claim per commit.
+- Three honesties: **kernel-honest** (the trusted base is what the kernel reports), **status-honest**
+  (the footers repeat that report literally), **transcription-honest** (the statement matches its
+  source — the kernel cannot check this; the fidelity footers make it auditable).
 - Never claim `math.machine-checked` while a `sorry`/`sorryAx` or non-standard axiom is present; the
   `Axioms:` footer should be the literal `#print axioms` output.
+- An `axiomatize` commit (`Status: math.axiomatised`) MUST carry an `AXIOM:` footer and a
+  `Source-Ref:` footer, and SHOULD carry a `Refutation-Attempt:` (the `ckc-axiom-check` hook
+  rejects an axiomatised commit missing the anchor or the attempt).
 - Status changes by adding a new commit, never by editing an old one.
 - Negative results (counterexamples, null results, failed replications) are normal commits, never
   hidden or relabelled as a `fix`.

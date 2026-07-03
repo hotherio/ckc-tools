@@ -86,12 +86,14 @@ def check(c: Commit, profiles: set[str] | None = None,
             f.token == "AXIOM" for f in present_tb):
         issues.append(Issue("warning",
             "Status is math.axiomatised but there is no AXIOM: footer naming the cited axiom."))
-    # statement-fidelity nudges: the kernel checks the statement as written, not that it
-    # matches the source (ckc-axiom-check enforces these as errors where it is installed)
-    if status and status.strip() == "math.axiomatised" and c.footer("Paper-Ref") is None:
+    # statement-fidelity nudges (spec v0.2.0 rule 14): the kernel checks the statement as
+    # written, not that it matches the source (ckc-axiom-check enforces these as errors where
+    # it is installed). Paper-Ref: is a deprecated alias of Source-Ref: for one release.
+    if status and status.strip() == "math.axiomatised" and (
+            c.footer("Source-Ref") is None and c.footer("Paper-Ref") is None):
         issues.append(Issue("warning",
-            "Status is math.axiomatised but there is no Paper-Ref: footer anchoring the "
-            "formal statement to its source (work, theorem, page)."))
+            "Status is math.axiomatised but there is no Source-Ref: footer anchoring the "
+            "formal statement to its source (work, locus: theorem, equation, or page)."))
     if status and status.strip() == "math.axiomatised" and c.footer("Refutation-Attempt") is None:
         issues.append(Issue("warning",
             "Status is math.axiomatised but there is no Refutation-Attempt: footer naming "
@@ -106,5 +108,15 @@ def check(c: Commit, profiles: set[str] | None = None,
         issues.append(Issue("warning",
             "Status is math.machine-checked but there is no Axioms: footer "
             "(should be the literal #print axioms output)."))
+
+    # protocol-fidelity nudge (spec v0.2.0 rule 14, science profile): a measured/supported
+    # result that cites a registered protocol should state whether the as-run procedure matched
+    if status and status.strip() in ("sci.measured", "sci.supported") and (
+            c.footer("Pre-Registration") is not None or c.footer("Protocol") is not None
+    ) and c.footer("Protocol-Deviations") is None:
+        issues.append(Issue("warning",
+            f"Status is {status.strip()} and a Pre-Registration:/Protocol: is cited, but there "
+            "is no Protocol-Deviations: footer; as-run vs registered protocol is unverifiable. "
+            "Add 'Protocol-Deviations: none' or an enumerated log."))
 
     return issues

@@ -5,4 +5,6 @@ Dataset: D-2026-014 sha256:aa80...
 Sample-Size: n=1200
 Effect-Size: dMSE -0.03
 CI: 95% [-0.09, 0.04]
+Pre-Registration: OSF osf.io/7k2mq, registered 2026-01-10
+Protocol-Deviations: none
 Refutes: conjecture:tensor-rank-helps
