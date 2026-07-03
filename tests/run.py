@@ -198,8 +198,19 @@ def run() -> int:
         if not ok:
             fid_fail += 1
 
-    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases) + 2 + len(fidelity_cases)
-    failures += cli_fail + env_fail + protocol_fail + fid_fail
+    # Release-chain guard: the plugin manifest version must match the package version.
+    # (v0.3.0 shipped with a stale manifest, so `/plugin update` saw no new version.)
+    import json as _json
+    import re as _re
+    _root = Path(__file__).resolve().parents[1]
+    _manifest = _json.loads((_root / ".claude-plugin" / "plugin.json").read_text())["version"]
+    _pyproject = _re.search(r'version = "([^"]+)"', (_root / "pyproject.toml").read_text()).group(1)
+    ver_ok = _manifest == _pyproject
+    print(f"  [{'ok  ' if ver_ok else 'FAIL'}] release: plugin.json version ({_manifest}) == pyproject ({_pyproject})")
+    ver_fail = 0 if ver_ok else 1
+
+    total = 1 + len(CASES) + len(PROFILE_CASES) + len(cli_cases) + 2 + len(fidelity_cases)
+    failures += cli_fail + env_fail + ver_fail + protocol_fail + fid_fail
     print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 
