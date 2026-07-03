@@ -22,7 +22,8 @@ Profile resolution: `--profile` → `$CKC_PROFILES` → `.ckc.toml` (`profiles =
 Checks: header shape `type[~][(scope)][!]: desc`; type ∈ vocabulary; `Status:` ∈ known `math.*`/`sci.*`;
 trusted-base tokens (`AXIOM`/`OPEN`/`ASSUMES`/`UNREPLICATED`) and breaking tokens uppercase; warnings
 for `~`/footer mismatch and honesty gaps (`axiomatised` w/o `AXIOM:`, `open` w/o `OPEN:`,
-`machine-checked` w/o `Axioms:`).
+`machine-checked` w/o `Axioms:`, `axiomatised` w/o the statement-fidelity footers `Paper-Ref:` /
+`Refutation-Attempt:` — enforced as hard errors by `ckc-axiom-check`).
 
 Hook (pre-commit framework):
 ```yaml
@@ -43,6 +44,19 @@ ckc-axiom-check .git/COMMIT_EDITMSG --require              # fail if axiom-repor
 Acts only on commits claiming `Status: math.machine-checked` or `math.axiomatised` with a `Lean:` /
 `Formal-Statement:` footer. Needs Lean + a built project + `axiom-report` on PATH (or
 `$CKC_AXIOM_REPORT`). Exit 0 honest/skipped, 1 dishonest.
+
+**Statement-fidelity gate (strict, no Lean needed).** A `math.axiomatised` commit is rejected
+(exit 1) unless it carries both fidelity footers — the kernel checks the statement as written, not
+that the transcription matches the source:
+
+- `Paper-Ref: <work, theorem, page>` — the source anchor of the transcribed statement, precise
+  enough to re-derive the hypotheses (e.g. `Braess & Hackbusch 2005, Thm 3.1, p.417`).
+- `Refutation-Attempt: <artifact>` — the path/id of an attempt to refute the transcribed statement
+  (e.g. `Refutations/F00_expSumRank_logBound.lean`).
+
+`Fidelity-Reviewed: <who/when>` is an optional third token recording a human fidelity sign-off.
+This gate runs before `axiom-report` is looked up, so it applies even where Lean is unavailable.
+`math.machine-checked` commits are unaffected.
 
 ## claimgraph (build & query the ClaimGraph)
 

@@ -34,7 +34,7 @@
   ],
   "provenance_tokens": [
     "Claim-ID", "Status", "Impact", "Lean", "Formal-Statement", "Axioms", "Verified-By",
-    "Proof-Hash", "Cites", "Phase", "Gate",
+    "Proof-Hash", "Cites", "Paper-Ref", "Refutation-Attempt", "Fidelity-Reviewed", "Phase", "Gate",
     "Dataset", "Raw-Data", "Protocol", "Method", "Sample-Size", "Replicates", "Effect-Size",
     "CI", "P-Value", "Code", "Environment", "Seed", "Hardware", "Metric", "Pre-Registration",
     "Ethics-Approval", "Profile", "Affects"

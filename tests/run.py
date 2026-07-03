@@ -43,6 +43,12 @@ CASES = [
      "axiomatize~(x): cite\n\nStatus: math.axiomatised\nAXIOM: A.b (x)\nLean: A.b", 0, 0),
     ("machine-checked without Axioms (warn)",
      "formalize(x): close it\n\nLean: A.b\nStatus: math.machine-checked", 0, 1),
+    ("axiomatised with fidelity footers",
+     "axiomatize~(x): cite\n\nLean: A.b\nStatus: math.axiomatised\nAXIOM: A.b (x)\n"
+     "Paper-Ref: Braess & Hackbusch 2005, Thm 3.1, p.417\n"
+     "Refutation-Attempt: Refutations/F00_expSumRank_logBound.lean", 0, 0),
+    ("axiomatised without fidelity footers (warn x2)",
+     "axiomatize~(x): cite\n\nLean: A.b\nStatus: math.axiomatised\nAXIOM: A.b (x)", 0, 2),
 ]
 
 # (label, message, expected_errors, min_warnings, profiles)
@@ -119,8 +125,45 @@ def run() -> int:
     if not ok:
         env_fail = 1
 
-    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases) + 1
-    failures += cli_fail + env_fail
+    # ckc-axiom-check: the statement-fidelity gate on math.axiomatised commits runs BEFORE
+    # axiom-report is looked up, so it is testable (and fast-fails) without a Lean toolchain.
+    import contextlib
+    import io
+    import tempfile
+
+    from ckc_axiom_check.cli import main as axiom_main
+    fidelity_cases = [
+        ("axiom-check: axiomatised missing fidelity footers exits 1",
+         "axiomatize~(x): cite\n\nLean: A.b\nStatus: math.axiomatised\nAXIOM: A.b (x)\n", 1),
+        ("axiom-check: axiomatised missing only Refutation-Attempt exits 1",
+         "axiomatize~(x): cite\n\nLean: A.b\nStatus: math.axiomatised\nAXIOM: A.b (x)\n"
+         "Paper-Ref: Braess & Hackbusch 2005, Thm 3.1, p.417\n", 1),
+        ("axiom-check: axiomatised with fidelity footers skips (no axiom-report)",
+         "axiomatize~(x): cite\n\nLean: A.b\nStatus: math.axiomatised\nAXIOM: A.b (x)\n"
+         "Paper-Ref: Braess & Hackbusch 2005, Thm 3.1, p.417\n"
+         "Refutation-Attempt: Refutations/F00_expSumRank_logBound.lean\n", 0),
+        ("axiom-check: machine-checked unaffected by fidelity gate",
+         "formalize(x): close it\n\nLean: A.b\nStatus: math.machine-checked\n"
+         "Axioms: propext\n", 0),
+    ]
+    fid_fail = 0
+    for label, msg, exp in fidelity_cases:
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as tf:
+            tf.write(msg)
+            path = tf.name
+        try:
+            with mock.patch("ckc_axiom_check.cli._find_axiom_report", return_value=None), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                rc = axiom_main([path])
+        finally:
+            os.unlink(path)
+        ok = rc == exp
+        print(f"  [{'ok  ' if ok else 'FAIL'}] {label}  (exit={rc} exp={exp})")
+        if not ok:
+            fid_fail += 1
+
+    total = len(CASES) + len(PROFILE_CASES) + len(cli_cases) + 1 + len(fidelity_cases)
+    failures += cli_fail + env_fail + fid_fail
     print(f"\n{total - failures}/{total} passed")
     return 1 if failures else 0
 
