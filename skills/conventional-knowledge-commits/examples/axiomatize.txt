@@ -6,5 +6,5 @@ Lean: IGL.expSumRank_logBound
 Status: math.axiomatised
 AXIOM: IGL.expSumRank_logBound (separable rank K = O(log 1/eps), dimension-independent)
 Cites: Braess & Hackbusch 2005, Numer. Math.
-Paper-Ref: Braess & Hackbusch 2005, Thm 3.1, p.417
+Source-Ref: Braess & Hackbusch 2005, Thm 3.1, p.417
 Refutation-Attempt: Refutations/F00_expSumRank_logBound.lean

@@ -64,15 +64,19 @@ tooling and prose, unchanged.
 5. **Add trusted-base markers** (uppercase footers, like `BREAKING CHANGE`) when the status is not
    clean: `AXIOM: <name> (<why>)`, `OPEN: <what is unproven>`, `ASSUMES: <untested assumption>`,
    `UNREPLICATED: <scope>`. If you write one, also flag `~` on the type. An `AXIOM:` footer
-   (`Status: math.axiomatised`) requires two statement-fidelity companions:
-   `Paper-Ref: <work, theorem, page>` anchoring the formal statement to its source, and
+   (`Status: math.axiomatised`) requires two statement-fidelity companions (spec v0.2.0 rule 14):
+   `Source-Ref: <work, locus>` anchoring the formal statement to its source (a theorem, equation,
+   or page — `Paper-Ref:` is a deprecated alias, removed in v0.4.0), and
    `Refutation-Attempt: <artifact>` recording an attempt to refute the transcribed statement —
    the kernel is honest about what was stated, not that the statement matches the paper, so
    kernel-honest is not statement-honest (`ckc-axiom-check` rejects axiomatised commits missing
    either; `Fidelity-Reviewed: <who/when>` optionally records a human sign-off).
 6. **Add provenance** as relevant: `Lean:`/`Formal-Statement:` (the declaration id),
    `Axioms:` (the literal `#print axioms` output), `Verified-By:`, `Claim-ID:`, `Cites:`; for science,
-   `Dataset:`, `Sample-Size:`, `Effect-Size:`, `CI:`, `P-Value:`, `Seed:`, `Pre-Registration:`.
+   `Dataset:`, `Sample-Size:`, `Effect-Size:`, `CI:`, `P-Value:`, `Seed:`, `Pre-Registration:`. A
+   `sci.measured`/`sci.supported` commit that cites a `Pre-Registration:` or `Protocol:` should also
+   carry `Protocol-Deviations: none | <log>` — `none` asserts the as-run procedure matches the
+   registration; otherwise enumerate each deviation with a one-line impact note.
 
 ## Honesty rules (do not break these)
 
