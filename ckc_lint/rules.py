@@ -86,6 +86,16 @@ def check(c: Commit, profiles: set[str] | None = None,
             f.token == "AXIOM" for f in present_tb):
         issues.append(Issue("warning",
             "Status is math.axiomatised but there is no AXIOM: footer naming the cited axiom."))
+    # statement-fidelity nudges: the kernel checks the statement as written, not that it
+    # matches the source (ckc-axiom-check enforces these as errors where it is installed)
+    if status and status.strip() == "math.axiomatised" and c.footer("Paper-Ref") is None:
+        issues.append(Issue("warning",
+            "Status is math.axiomatised but there is no Paper-Ref: footer anchoring the "
+            "formal statement to its source (work, theorem, page)."))
+    if status and status.strip() == "math.axiomatised" and c.footer("Refutation-Attempt") is None:
+        issues.append(Issue("warning",
+            "Status is math.axiomatised but there is no Refutation-Attempt: footer naming "
+            "the artifact of an attempt to refute the transcribed statement."))
     if status and status.strip() == "math.open" and not any(
             f.token == "OPEN" for f in present_tb):
         issues.append(Issue("warning",

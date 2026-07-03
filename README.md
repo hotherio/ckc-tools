@@ -47,7 +47,7 @@ Commits and CKC:
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.3
+    rev: v0.2.0
     hooks:
       - id: ckc
         # args: [--profile, proof]      # optional; omit for both profiles
@@ -86,7 +86,7 @@ repos:
         stages: [commit-msg]
         args: [feat, fix, build, chore, ci, docs, perf, refactor, revert, style, test, conjecture, lit, review, refute, retract, expose, meta, state, proof, formalize, axiomatize, strengthen, generalize, weaken, port, experiment, result, replicate, null, data, protocol, method, analysis, repro-fix]
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.3
+    rev: v0.2.0
     hooks:
       - id: ckc
 ```
@@ -110,7 +110,7 @@ carries over:
 
 # after: same args, now also allows CKC types and runs the CKC checks
 - repo: https://github.com/hotherio/ckc-tools
-  rev: v0.1.3
+  rev: v0.2.0
   hooks:
     - id: ckc
       stages: [commit-msg]
@@ -160,6 +160,14 @@ prose (`chore`, `docs`, `feat`) and CKC commits for the work (`conjecture`, `for
 project dir if it is not the working directory). It rejects only a genuine contradiction (the kernel
 reports a `sorryAx` or a cited axiom while the commit claims `machine-checked`); if it cannot
 determine a declaration's status it skips, unless you pass `--require`.
+
+On top of the kernel check, a `math.axiomatised` commit must also pass a **statement-fidelity
+gate**: the kernel is honest about the statement as written, not that the transcription matches the
+source, so the commit is rejected unless it carries a `Paper-Ref:` footer (the source anchor:
+work, theorem, page) and a `Refutation-Attempt:` footer (the artifact of an attempt to refute the
+transcribed statement). This part needs no Lean toolchain and runs before `axiom-report` is looked
+up. `ckc-lint` emits the same requirements as warnings, so repositories not running
+`ckc-axiom-check` are still nudged. `math.machine-checked` commits are unaffected.
 
 ## Without a hook framework
 

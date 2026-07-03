@@ -5,9 +5,17 @@ footer, this runs the lean-math `axiom-report` on those declarations and rejects
 any of them is not `clean` (i.e. the kernel sees a `sorryAx` or a cited axiom). It also flags a
 `math.axiomatised` commit whose named declarations are actually clean or open.
 
+A `math.axiomatised` commit is additionally held to statement fidelity: the kernel can vouch for
+the statement as written, not that the transcription matches the source, so the commit must carry
+a `Paper-Ref:` footer (anchoring the Lean statement to the cited work, theorem, and page) and a
+`Refutation-Attempt:` footer (naming the artifact of an attempt to refute the transcribed
+statement). This check needs no Lean toolchain and runs before `axiom-report` is looked up;
+missing footers reject the commit even when the kernel check would be skipped.
+
 This extends the lean-math honesty gate from the working tree into the commit log. It is opt-in:
 it needs Lean, a built project, and `axiom-report` on PATH (or `$CKC_AXIOM_REPORT`). When that is
-unavailable it skips, unless `--require` is given.
+unavailable it skips (the statement-fidelity gate above still applies), unless `--require` is
+given.
 
 Usage:
     ckc-axiom-check [--require] [--project DIR] <commit-msg-file>
@@ -70,7 +78,27 @@ def main(argv: list[str] | None = None) -> int:
     names = [n.strip().removeprefix("lean:") for n in lean.split(",") if n.strip()]
 
     # only proof commits that make a checkable claim are in scope
-    if status not in ("math.machine-checked", "math.axiomatised") or not names:
+    if status not in ("math.machine-checked", "math.axiomatised"):
+        return 0
+
+    # statement-fidelity gate (math.axiomatised only, checked BEFORE the kernel is consulted:
+    # it needs no Lean toolchain and must not be bypassable by an unavailable axiom-report).
+    if status == "math.axiomatised":
+        missing = [t for t in ("Paper-Ref", "Refutation-Attempt")
+                   if not (c.footer(t) or "").strip()]
+        if missing:
+            print("ckc-axiom-check: Status is math.axiomatised but the commit is missing "
+                  f"required statement-fidelity footer(s): {', '.join(t + ':' for t in missing)}.",
+                  file=sys.stderr)
+            print("  The kernel is honest about the statement as written, not that the "
+                  "transcription matches the source. Every cited axiom needs a source anchor "
+                  "(Paper-Ref: <work, theorem, page>) and a refutation-attempt artifact "
+                  "(Refutation-Attempt: <path to the attempt>).", file=sys.stderr)
+            print("  See the axiom admission protocol (WORKFLOW.md) and the axiom-faithfulness "
+                  "reference in the lean-math proof-review skill.", file=sys.stderr)
+            return 1
+
+    if not names:
         return 0
 
     report_bin = _find_axiom_report()
