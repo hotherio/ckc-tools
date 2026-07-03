@@ -30,7 +30,7 @@ Hook (pre-commit framework):
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/hotherio/ckc-tools
-    rev: v0.1.3
+    rev: v0.2.0
     hooks: [ { id: ckc }, { id: ckc-axiom-check } ]   # second is optional
 ```
 `pre-commit install --hook-type commit-msg`. commitlint users: extend `commitlint-config-ckc`.
